@@ -1,4 +1,4 @@
-import 'babel-polyfill';
+import '@babel/polyfill';
 import dva from 'dva';
 
 // 1. Initialize
@@ -21,7 +21,7 @@ const app = dva({
 // Moved to router.js
 
 // 4. Router
-app.router(require('./router.jsx'));
+app.router(require('./router.jsx').default);
 
 // 5. Start
 app.start('#root');

@@ -1,6 +1,6 @@
 
 
-import React from 'react';
+import React ,{ Fragment } from 'react';
 import './style/index.css';
 import './utils/util';
 import MyTabBar from './layout/tabBar';
@@ -37,8 +37,8 @@ function RouterConfig({
   });
 
   return (
-    <HashRouter history={history}>>
-        <div>
+    <Router history={history}>
+        <Fragment>
         <Switch>
             <Route  exact path="/index" component={App}/>
             <Route  exact path="/product" component={Product}/>
@@ -49,8 +49,8 @@ function RouterConfig({
             }} />
         </Switch>
         <MyTabBar></MyTabBar>
-        </div>
-    </HashRouter>
+        </Fragment>
+    </Router>
   );
 }
 
