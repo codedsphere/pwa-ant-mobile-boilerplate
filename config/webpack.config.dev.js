@@ -5,10 +5,10 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
-const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
-const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin');
-const eslintFormatter = require('react-dev-utils/eslintFormatter');
-const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
+const InterpolateHtmlPlugin = require('react-dev-utils-for-webpack4/InterpolateHtmlPlugin');
+const WatchMissingNodeModulesPlugin = require('react-dev-utils-for-webpack4/WatchMissingNodeModulesPlugin');
+const eslintFormatter = require('react-dev-utils-for-webpack4/eslintFormatter');
+const ModuleScopePlugin = require('react-dev-utils-for-webpack4/ModuleScopePlugin');
 const getClientEnvironment = require('./env');
 const paths = require('./paths');
 //配置postCss 处理autoprefixer px2rem*/
@@ -55,7 +55,7 @@ module.exports = {
     // the line below with these two lines if you prefer the stock client:
     // require.resolve('webpack-dev-server/client') + '?/',
     // require.resolve('webpack/hot/dev-server'),
-    require.resolve('react-dev-utils/webpackHotDevClient'),
+    require.resolve('react-dev-utils-for-webpack4/webpackHotDevClient'),
     // Finally, this is your app's code:
     paths.appIndexJs,
     // We include the app code last so that if there is a runtime error during
@@ -270,12 +270,12 @@ module.exports = {
     // The public URL is available as %PUBLIC_URL% in index.html, e.g.:
     // <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
     // In development, this will be an empty string.
-    new InterpolateHtmlPlugin(env.raw),
     // Generates an `index.html` file with the <script> injected.
     new HtmlWebpackPlugin({
       inject: true,
       template: paths.appHtml,
     }),
+    new InterpolateHtmlPlugin(env.raw),
     // Add module names to factory functions so they appear in browser profiler.
     new webpack.NamedModulesPlugin(),
     // Makes some environment variables available to the JS code, for example:
