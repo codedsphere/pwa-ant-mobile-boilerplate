@@ -18,15 +18,15 @@ const fs = require('fs');
 const chalk = require('chalk');
 const webpack = require('webpack');
 const WebpackDevServer = require('webpack-dev-server');
-const clearConsole = require('react-dev-utils-for-webpack4/clearConsole');
-const checkRequiredFiles = require('react-dev-utils-for-webpack4/checkRequiredFiles');
+const clearConsole = require('react-dev-utils/clearConsole');
+const checkRequiredFiles = require('react-dev-utils/checkRequiredFiles');
 const {
   choosePort,
   createCompiler,
   prepareProxy,
   prepareUrls,
-} = require('react-dev-utils-for-webpack4/WebpackDevServerUtils');
-const openBrowser = require('react-dev-utils-for-webpack4/openBrowser');
+} = require('react-dev-utils/WebpackDevServerUtils');
+const openBrowser = require('react-dev-utils/openBrowser');
 const paths = require('../config/paths');
 const config = require('../config/webpack.config.dev');
 const createDevServerConfig = require('../config/webpackDevServer.config');
@@ -54,7 +54,6 @@ if (process.env.HOST) {
   console.log(
     `If this was unintentional, check that you haven't mistakenly set it in your shell.`
   );
-  console.log(`Learn more here: ${chalk.yellow('http://bit.ly/2mwWSwH')}`);
   console.log();
 }
 
@@ -83,7 +82,7 @@ choosePort(HOST, DEFAULT_PORT)
     // Launch WebpackDevServer.
     devServer.listen(port, HOST, err => {
       if (err) {
-        return console.log(err);
+        // return console.log(err);
       }
       if (isInteractive) {
         clearConsole();

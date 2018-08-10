@@ -20,11 +20,11 @@ const fs = require('fs-extra');
 const webpack = require('webpack');
 const config = require('../config/webpack.config.prod');
 const paths = require('../config/paths');
-const checkRequiredFiles = require('react-dev-utils-for-webpack4/checkRequiredFiles');
-const formatWebpackMessages = require('react-dev-utils-for-webpack4/formatWebpackMessages');
-const printHostingInstructions = require('react-dev-utils-for-webpack4/printHostingInstructions');
-const FileSizeReporter = require('react-dev-utils-for-webpack4/FileSizeReporter');
-const printBuildError = require('react-dev-utils-for-webpack4/printBuildError');
+const checkRequiredFiles = require('react-dev-utils/checkRequiredFiles');
+const formatWebpackMessages = require('react-dev-utils/formatWebpackMessages');
+const printHostingInstructions = require('react-dev-utils/printHostingInstructions');
+const FileSizeReporter = require('react-dev-utils/FileSizeReporter');
+const printBuildError = require('react-dev-utils/printBuildError');
 
 const measureFileSizesBeforeBuild =
   FileSizeReporter.measureFileSizesBeforeBuild;
@@ -42,11 +42,11 @@ if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs])) {
 
 // First, read the current file sizes in build directory.
 // This lets us display how much they changed later.
-measureFileSizesBeforeBuild(paths.appBuild)
+measureFileSizesBeforeBuild(paths.appDist)
   .then(previousFileSizes => {
     // Remove all content but keep the directory so that
     // if you're in it, you don't end up in Trash
-    fs.emptyDirSync(paths.appBuild);
+    fs.emptyDirSync(paths.appDist);
     // Merge with the public folder
     copyPublicFolder();
     // Start the webpack build
@@ -55,18 +55,18 @@ measureFileSizesBeforeBuild(paths.appBuild)
   .then(
     ({ stats, previousFileSizes, warnings }) => {
       if (warnings.length) {
-        console.log(chalk.yellow('Compiled with warnings.\n'));
-        console.log(warnings.join('\n\n'));
-        console.log(
-          '\nSearch for the ' +
-            chalk.underline(chalk.yellow('keywords')) +
-            ' to learn more about each warning.'
-        );
-        console.log(
-          'To ignore, add ' +
-            chalk.cyan('// eslint-disable-next-line') +
-            ' to the line before.\n'
-        );
+        // console.log(chalk.yellow('Compiled with warnings.\n'));
+        // console.log(warnings.join('\n\n'));
+        // console.log(
+        //   '\nSearch for the ' +
+        //     chalk.underline(chalk.yellow('keywords')) +
+        //     ' to learn more about each warning.'
+        // );
+        // console.log(
+        //   'To ignore, add ' +
+        //     chalk.cyan('// eslint-disable-next-line') +
+        //     ' to the line before.\n'
+        // );
       } else {
         console.log(chalk.green('Compiled successfully.\n'));
       }
@@ -75,7 +75,7 @@ measureFileSizesBeforeBuild(paths.appBuild)
       printFileSizesAfterBuild(
         stats,
         previousFileSizes,
-        paths.appBuild,
+        paths.appDist,
         WARN_AFTER_BUNDLE_GZIP_SIZE,
         WARN_AFTER_CHUNK_GZIP_SIZE
       );
@@ -84,7 +84,7 @@ measureFileSizesBeforeBuild(paths.appBuild)
       const appPackage = require(paths.appPackageJson);
       const publicUrl = paths.publicUrl;
       const publicPath = config.output.publicPath;
-      const buildFolder = path.relative(process.cwd(), paths.appBuild);
+      const buildFolder = path.relative(process.cwd(), paths.appDist);
       printHostingInstructions(
         appPackage,
         publicUrl,
@@ -143,7 +143,7 @@ function build(previousFileSizes) {
 }
 
 function copyPublicFolder() {
-  fs.copySync(paths.appPublic, paths.appBuild, {
+  fs.copySync(paths.appPublic, paths.appDist, {
     dereference: true,
     filter: file => file !== paths.appHtml,
   });

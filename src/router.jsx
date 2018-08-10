@@ -1,17 +1,13 @@
 
 
-import React ,{ Fragment } from 'react';
-import './style/index.css';
-import './utils/util';
-import MyTabBar from './layout/tabBar';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Router, Switch, Route, Redirect, HashRouter
+  Router, Switch, Route
 } from 'dva/router';
 import Dynamic from 'dva/dynamic';
 import registerServiceWorker from './registerServiceWorker';
 registerServiceWorker();
-
 
 function RouterConfig({
   history, app
@@ -23,33 +19,19 @@ function RouterConfig({
     // ],
     component: () => import('./component/App')
   });
-  const Vistied = Dynamic({
+
+  const ErrorPage = Dynamic({
     app,
-    component: () => import('./component/Vistied')
-  });
-  const Money = Dynamic({
-    app,
-    component: () => import('./component/Money')
-  });
-  const Product = Dynamic({
-    app,
-    component: () => import('./component/Product')
+    component: () => import('./component/Error')
   });
 
   return (
     <Router history={history}>
-        <Fragment>
         <Switch>
-            <Route  exact path="/index" component={App}/>
-            <Route  exact path="/product" component={Product}/>
-            <Route  exact path="/vistied" component={Vistied}/>
-            <Route  exact path="/Money" component={Money}/>
-            <Route path="/" render={() => {
-                return <Redirect to="/index" />
-            }} />
+            <Route exact path="/" component={App} />
+            <Route exact path="/index" component={App}/>
+            <Route exact path="/error" component={ErrorPage}/>
         </Switch>
-        <MyTabBar></MyTabBar>
-        </Fragment>
     </Router>
   );
 }

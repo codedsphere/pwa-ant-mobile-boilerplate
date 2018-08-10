@@ -2,7 +2,7 @@
  * Created by Administrator on 2018/6/6.
  */
 import React from 'react';
-import style from '../style/layout.less'
+import css from './layout.less'
 
 class HorizontalLists extends React.Component {
     constructor(props) {
@@ -15,7 +15,7 @@ class HorizontalLists extends React.Component {
     render() {
         const lists = this.props.lists;
         return (
-            <ul className={style.horizontalLists}>
+            <ul className={css.horizontalLists}>
                 {
                     lists.map((item,index)=>{
                         return (

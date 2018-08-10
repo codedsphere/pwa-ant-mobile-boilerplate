@@ -38,15 +38,23 @@ function getServedPath(appPackageJson) {
   return ensureSlash(servedUrl, true);
 }
 
+
+const appSrc = resolveApp('src');
 // config after eject: we're in ./config/
 module.exports = {
+  assets: path.resolve(appSrc, 'assets'),
+  components: path.resolve(appSrc, 'components'),
+  constants: path.resolve(appSrc, 'constants'),
+  layout: path.resolve(appSrc, 'layout'),
+  models: path.resolve(appSrc, 'models'),
+  utils: path.resolve(appSrc, 'utils'),
   dotenv: resolveApp('.env'),
-  appBuild: resolveApp('build'),
+  appDist: resolveApp('dist'),
   appPublic: resolveApp('public'),
   appHtml: resolveApp('public/index.html'),
   appIndexJs: resolveApp('src/index.js'),
   appPackageJson: resolveApp('package.json'),
-  appSrc: resolveApp('src'),
+  appSrc: appSrc,
   yarnLockFile: resolveApp('yarn.lock'),
   testsSetup: resolveApp('src/setupTests.js'),
   appNodeModules: resolveApp('node_modules'),

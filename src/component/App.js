@@ -1,124 +1,139 @@
-import React, { Component } from 'react';
-import { Carousel, WingBlank } from 'antd-mobile';
-import { get, post} from  '../utils/request';
-import style from '../style/App.less';
-import HorizontalLists from '../layout/horizontalLists'
-
-window.$http = {get,post};
+import React, { Component } from "react";
+import { InputItem, WingBlank, Button, WhiteSpace, Modal } from "antd-mobile";
+import { connect } from "dva";
+import queryString from 'query-string';
+import Cookies from 'universal-cookie';
+import css from "./App.less";
 
 class App extends Component {
-    constructor(prop){
-        super(prop);
-        this.state= {
-            lists:[
-                {src:'./images/home_invite.png',text:'邀请好友'},
-                {src:'./images/home_operational.png',text:'运营数据'},
-                {src:'./images/home_mall.png',text:'兜币商城'},
-                {src:'./images/home_school.png',text:'兜友学堂'},
-            ],
-            bottomLists:[
-                {src:'./images/home_Introductio.png',text:'信息披露'},
-                {src:'./images/home_safety.png',text:'安全措施'},
-                {src:'./images/home_compliance.png',text:'合规进程'},
-                {src:'./images/home_icp.png',text:'ICP许可证'},
-            ],
-            bannerLists: [
-                {picture:'https://test-mobile.mandofin.com/picture/dfs/group1/M00/00/29/wKgAGFq-EACAF7yaAAGk2HR4OWc584.jpg',id:"smy1",bannerUrl:"www.baidu.com"},
-                {picture:'https://test-mobile.mandofin.com/picture/dfs/group1/M00/00/34/wKgAGFr9Q22AaPW9AAF1lqmrHFQ487.jpg',id:"smy2",bannerUrl:"www.baidu.com"},
-                {picture:'https://test-mobile.mandofin.com/picture/dfs/group1/M00/00/0F/wKgAGFob4j2AeMHlAAD-kblgNmA478.png',id:"smy3",bannerUrl:"www.baidu.com"},
-                ],
-            mobileLists:[
-                [
-                    {mobile: '139*****645', text: '消费金融D1232', money: '2000元'},
-                    {mobile: '139*****641', text: '消费金融D1232', money: '1000元'},
-                    {mobile: '139*****643', text: '消费金融D1232', money: '1000元'}
-                ],
-                [
-                    {mobile:'139*****644',text:'消费金融D1232',money:'200元'},
-                    {mobile:'139*****615',text:'消费金融D1232',money:'4000元'},
-                    {mobile:'139*****642',text:'消费金融D1232',money:'5000元'}
-                ],
-                [
-                    {mobile:'139*****615',text:'消费金融D1232',money:'800元'},
-                    {mobile:'139*****115',text:'消费金融D1232',money:'9000元'},
-                    {mobile:'139*****145',text:'消费金融D1232',money:'10000元'}
-                ]
-            ],
+  constructor(props) {
+    super(props);
+    this.dispatch = props.dispatch;
+  }
+  componentDidMount() {
+
+    const {code, state} = queryString.parse(window.location.search);
+
+    const cookies = new Cookies();
+
+    this.dispatch({
+      type: "paymentModel/updateState",
+      payload: {
+        code, state,
+        openinfo: cookies.get('openinfo') || '',
+      }
+    });
+  }
+
+  onChange = (input, type) => {
+    this.dispatch({
+      type: "paymentModel/updateState",
+      payload: {
+        [type]: input
+      }
+    });
+  };
+  onConfirm = () => {
+    this.dispatch({
+      type: "paymentModel/initializeState",
+      payload: ["showModal"]
+    });
+  };
+  onSubmit = value => {
+    const { username, amount } = this.props;
+
+    let modalText = "";
+    if (!username) {
+      modalText = "会员帐号只能由数字、大小写字母组成!";
+    } else {
+      if (isNaN(amount)) {
+        modalText = "[提示]金额非有效数字！";
+      } else {
+        const valAmount = isNaN(parseInt(amount, 10))
+          ? 0
+          : parseInt(amount, 10);
+        if (valAmount < 1) {
+          modalText = "[提示]1元以上才能充值！";
+        } else 
+        if (valAmount > 100000) {
+          modalText = "[提示]充值金额不能超过100000！";
         }
+      }
     }
-    componentDidMount() {
-        // post("/bannerManage/findBanners.json",{type:'IOS'}).then((res)=>{
-        //     console.log(res);
-        //     const bannerLists = res.data.banners;
-        //     this.setState({
-        //         bannerLists,
-        //     });
-        // });
+
+    if (modalText !== "") {
+      this.dispatch({
+        type: "paymentModel/updateState",
+        payload: {
+          modalText,
+          showModal: true
+        }
+      });
+    } else {
+      this.dispatch({
+        type: "paymentModel/submitPayment"
+      });
     }
-    onChange = (val) => {
-        console.log(val);
-    }
+  };
   render() {
-    const monlieLists = this.state.mobileLists;
+    const { modalText, showModal } = this.props;
     return (
-      <div className={style.App}>
-          <WingBlank  className={style.App_header}>
-              <Carousel autoplay={true} infinite style={{width:'100%'}} dotStyle={{marginBottom:'10px'}} dotActiveStyle={{marginBottom:'10px'}}>
-                  {this.state.bannerLists.map(val => (
-                      <a key={val.id} href={val.bannerUrl}>
-                          <img className={style.App_banner} src={val.picture} alt=""/>
-                      </a>
-                  ))}
-              </Carousel>
-          </WingBlank>
-          <div className={style.App_data}>
-              <div>累计投资<span>15.14</span>亿</div>
-              <div>用户总<span>19.23</span>万</div>
+      <div className={css.App}>
+        <div className={css.App_Header}>
+          <div className={css.App_HeaderInner}>在线充值</div>
+        </div>
+        <WingBlank>
+          <WhiteSpace />
+          <div className={css.App_Notice}>充值信息</div>
+          <WhiteSpace />
+        </WingBlank>
+        <InputItem
+          placeholder="请输入您的会员账号"
+          onChange={input => this.onChange(input, "username")}
+        >
+          账号
+        </InputItem>
+        <InputItem
+          placeholder="请输入充值金额，单位元"
+          onChange={input => this.onChange(input, "amount")}
+        >
+          金额
+        </InputItem>
+        <WingBlank>
+          <WhiteSpace />
+          <div className={css.App_Notice}>单笔最低金额10元， 最高100000元</div>
+          <WhiteSpace size="xl" />
+          <Button className={css.App_SubmitBtn} onClick={this.onSubmit}>
+            确定
+          </Button>
+        </WingBlank>
+        <Modal
+          visible={showModal}
+          transparent
+          maskClosable={false}
+          title=""
+          wrapProps={{ onTouchStart: this.onWrapTouchStart }}
+        >
+          <div className={css.App_Modal}>
+            <div className={css.App_ModalValidationText}>{modalText}</div>
+            <WhiteSpace />
+            <div className={css.App_ModalConfirm}>
+              <button
+                className={css.App_ModalConfirmBtn}
+                onClick={this.onConfirm}
+              >
+                确定
+              </button>
+            </div>
           </div>
-          <HorizontalLists lists={this.state.lists}></HorizontalLists>
-          <p className={style.app_tip}>周日24点服务器调整的通知</p>
-          <div className={style.app_newTag}>
-              <p className={style.new_title}>新人乐F044 <span className={style.new_tag}>新手标</span></p>
-              <div className={style.new_block}>
-                  <div>
-                      <span>预计年化收益率</span>
-                      <p>9.00%</p>
-                  </div>
-                  <div>
-                      <span>理财期限</span>
-                      <p>27天</p>
-                  </div>
-              </div>
-              <div className={style.new_btn}>立即投资</div>
-          </div>
-          <div className={style.tztz}>
-              <p>他们在投资</p>
-              <WingBlank className={style.carousel}>
-                  <Carousel vertical dots={false} dragging={false} swiping={false} autoplay infinite speed={1000} autoplayInterval={4000} resetAutoplay={false}>
-                      {monlieLists.map((item,index) => (
-                          <ul className={style.carousel_content} key={index+"carousel"}>
-                              <li><span>{item[0].mobile}</span><span>{item[0].text}</span><span>{item[0].money}</span></li>
-                              <li><span>{item[1].mobile}</span><span>{item[1].text}</span><span>{item[1].money}</span></li>
-                              <li><span>{item[2].mobile}</span><span>{item[2].text}</span><span>{item[2].money}</span></li>
-                          </ul>
-                      ))}
-                  </Carousel>
-              </WingBlank>
-          </div>
-          <HorizontalLists lists={this.state.bottomLists}></HorizontalLists>
-          <ul className={style.footer}>
-              <li>
-                  <span></span>
-                  <p>中房集团投资控股</p>
-              </li>
-              <li>
-                  <span></span>
-                  <p>上海银行存管</p>
-              </li>
-          </ul>
+        </Modal>
       </div>
     );
   }
 }
 
-export default App;
+const mapStatesToProps = ({ paymentModel }) => {
+  return { ...paymentModel };
+};
+
+export default connect(mapStatesToProps)(App);
