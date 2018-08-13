@@ -1,0 +1,12 @@
+version: '3'
+services:
+    pwa:
+    container_name: pwa
+    volumes:
+      - .:/app
+      - /app/node_modules
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '802:80'
